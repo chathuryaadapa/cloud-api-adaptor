@@ -528,6 +528,7 @@ func (tc *TestCase) Run() {
 			return ctx
 		}).
 		Teardown(func(ctx context.Context, t *testing.T, cfg *envconf.Config) context.Context {
+			fmt.Println("Entering teardown")
 			client, err := cfg.NewClient()
 			if err != nil {
 				t.Fatal(err)
@@ -553,6 +554,7 @@ func (tc *TestCase) Run() {
 				if err != nil {
 					t.Fatal(err)
 				}
+				fmt.Println("deleting auth json secret ... ")
 				if err = clientSet.CoreV1().Secrets(E2eNamespace).Delete(ctx, DEFAULT_AUTH_SECRET, metav1.DeleteOptions{}); err != nil {
 					t.Fatal(err)
 				}
