@@ -10,7 +10,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"os/exec"
 	"strings"
 	"testing"
 	"time"
@@ -200,12 +199,6 @@ func (tc *TestCase) Run() {
 				}
 				secretData := map[string][]byte{v1.DockerConfigJsonKey: authfile}
 				secret := NewSecret(E2eNamespace, DEFAULT_AUTH_SECRET, secretData, v1.SecretTypeDockerConfigJson)
-				fmt.Println("[INFO] secret", secret)
-				fmt.Println("[INFO] secretdata", secretData)
-				cmd := exec.Command("kubectl", "get", "secrets", "-n", E2eNamespace)
-				output, err := cmd.CombinedOutput()
-				fmt.Println("cmd:", cmd)
-				fmt.Println("Before creating secret ", string(output), err)
 				if err = client.Resources().Create(ctx, secret); err != nil {
 					t.Fatal(err)
 				}
