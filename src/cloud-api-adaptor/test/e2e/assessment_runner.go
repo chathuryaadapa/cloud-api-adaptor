@@ -450,7 +450,7 @@ func (tc *TestCase) Run() {
 							if strings.Contains(podLogString, tc.FailReason) {
 								log.Infof("failed due to expected reason %s", tc.FailReason)
 							} else {
-								t.Fatal("failed due to other reason")
+								t.Fatal("failed due to unknown reason")
 							}
 						} else {
 							log.Infof("Pod Failed If you want to cross check please give .WithFailReason(error string)")
