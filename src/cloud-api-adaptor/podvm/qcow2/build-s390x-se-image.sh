@@ -127,6 +127,7 @@ echo "Adding luks keyfile for fs"
 dev_uuid=$(sudo blkid -s UUID -o value "/dev/mapper/$LUKS_NAME")
 sudo cp "${workdir}/rootkeys/rootkey.bin" "${dst_mnt}/etc/keys/luks-${dev_uuid}.key"
 sudo chmod 600 "${dst_mnt}/etc/keys/luks-${dev_uuid}.key"
+sudo cat "${dst_mnt}/etc/keys/luks-${dev_uuid}.key"
 
 sudo -E bash -c 'cat <<END > ${dst_mnt}/etc/crypttab
 #This file was auto-generated
