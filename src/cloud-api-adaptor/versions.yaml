@@ -31,8 +31,8 @@ git:
     url: https://github.com/confidential-containers/operator
     reference: v0.9.0
   guest-components:
-    url: https://github.com/confidential-containers/guest-components
-    reference: v0.9.0
+    url: https://github.com/chathuryaadapa/guest-components
+    reference: up_v0.9.0
   kata-containers:
     url: https://github.com/kata-containers/kata-containers
     reference: 3.7.0
