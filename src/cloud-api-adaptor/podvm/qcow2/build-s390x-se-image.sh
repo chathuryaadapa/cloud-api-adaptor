@@ -23,6 +23,7 @@ if [ "${PODVM_DISTRO}" = "rhel" ]; then
     #due to the issue : https://gitlab.com/qemu-project/qemu/-/issues/2054
     cp /tmp/files/cryptsetup /usr/bin/cryptsetup
     chmod +x /usr/bin/cryptsetup
+    sudo yum install iptables-services -y >/dev/null 2>&1
     if ! command -v jq &> /dev/null || ! command -v cryptsetup &> /dev/null; then
         if ! command -v jq &> /dev/null; then
             echo >&2 "jq is required but it's not installed. Installing now..."
