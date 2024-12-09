@@ -1,5 +1,8 @@
 #!/bin/bash
 
+ARG ORG_ID
+ARG ACTIVATION_KEY
+
 if [ "${SE_BOOT:-false}" != "true" ]; then
     exit 0
 elif [ "${ARCH}" != "s390x" ]; then
