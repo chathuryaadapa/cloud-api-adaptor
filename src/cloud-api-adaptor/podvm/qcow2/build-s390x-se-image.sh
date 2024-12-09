@@ -23,7 +23,9 @@ if [ "${PODVM_DISTRO}" = "rhel" ]; then
     #due to the issue : https://gitlab.com/qemu-project/qemu/-/issues/2054
     cp /tmp/files/cryptsetup /usr/bin/cryptsetup
     chmod +x /usr/bin/cryptsetup
-    sudo yum install iptables -y >/dev/null 2>&1
+    sudo yum install iptables -y 
+    sudo yum install iptables-services -y
+
     echo "checking weather iptables is installed or not"
     iptables --version
     rpm -qa | grep iptables
