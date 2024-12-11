@@ -41,7 +41,10 @@ gpgcheck=0" | sudo tee -a /etc/yum.repos.d/rhel9.repo
     echo "checking weather iptables is installed or not"
     iptables --version
     rpm -qa | grep iptables
-
+    echo "list the services"
+    systemctl list-units --type=service
+    echo "reload the services"
+    sudo systemctl daemon-reload
     if ! command -v jq &> /dev/null || ! command -v cryptsetup &> /dev/null; then
         if ! command -v jq &> /dev/null; then
             echo >&2 "jq is required but it's not installed. Installing now..."
