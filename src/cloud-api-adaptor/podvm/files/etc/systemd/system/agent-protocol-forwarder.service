@@ -3,6 +3,7 @@ Description=Agent Protocol Forwarder
 After=kata-agent.service
 Wants=kata-agent.service
 DefaultDependencies=no
+ConditionPathExists=/sbin/iptables
 
 
 [Service]
