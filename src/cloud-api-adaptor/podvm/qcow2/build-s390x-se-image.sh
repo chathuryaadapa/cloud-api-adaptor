@@ -24,30 +24,30 @@ if [ "${PODVM_DISTRO}" = "rhel" ]; then
     #due to the issue : https://gitlab.com/qemu-project/qemu/-/issues/2054
     cp /tmp/files/cryptsetup /usr/bin/cryptsetup
     chmod +x /usr/bin/cryptsetup
-    echo "[rocky9-baseos]
-name=Rocky Linux 9 BaseOS
-baseurl=https://dl.rockylinux.org/pub/rocky/9/BaseOS/s390x/os/
-enabled=1
-gpgcheck=0
+#     echo "[rocky9-baseos]
+# name=Rocky Linux 9 BaseOS
+# baseurl=https://dl.rockylinux.org/pub/rocky/9/BaseOS/s390x/os/
+# enabled=1
+# gpgcheck=0
 
-[rocky9-appstream]
-name=Rocky Linux 9 AppStream
-baseurl=https://dl.rockylinux.org/pub/rocky/9/AppStream/s390x/os/
-enabled=1
-gpgcheck=0" | sudo tee -a /etc/yum.repos.d/rhel9.repo
-    sudo yum clean all
-    sudo yum makecache
-    sudo yum install iptables-services -y
-    echo "checking weather iptables is installed or not"
-    iptables --version
-    rpm -qa | grep iptables
-    echo "list the services"
-    systemctl list-units --type=service --all
-    echo "agent-protocol-forwarder service"
-    systemctl status agent-protocol-forwarder
-    journalctl -xeu agent-protocol-forwarder
-    echo "system files"
-    systemctl list-unit-files --all
+# [rocky9-appstream]
+# name=Rocky Linux 9 AppStream
+# baseurl=https://dl.rockylinux.org/pub/rocky/9/AppStream/s390x/os/
+# enabled=1
+# gpgcheck=0" | sudo tee -a /etc/yum.repos.d/rhel9.repo
+#     sudo yum clean all
+#     sudo yum makecache
+#     sudo yum install iptables-services -y
+#     echo "checking weather iptables is installed or not"
+#     iptables --version
+#     rpm -qa | grep iptables
+#     echo "list the services"
+#     systemctl list-units --type=service --all
+#     echo "agent-protocol-forwarder service"
+#     systemctl status agent-protocol-forwarder
+#     journalctl -xeu agent-protocol-forwarder
+#     echo "system files"
+#     systemctl list-unit-files --all
     # echo "reload the services"
     # sudo systemctl daemon-reload
     # echo "agent-protocol-forwarder service after restart"
