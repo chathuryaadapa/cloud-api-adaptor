@@ -195,7 +195,7 @@ endif
 
 # The umoci release page only publishes amd64 binaries. https://github.com/opencontainers/umoci/releases
 $(UMOCI_SRC):
-	$(call git_clone_repo_ref,$(UMOCI_REPO),$(UMOCI_SRC),$(UMOCI_VERSION))
+	$(call git_clone_repo_ref,$(UMOCI_REPO),$(UMOCI_SRC),"8f807a317985f23f90f0d1dd75f5f6de34e0c263")
 
 $(UMOCI_SRC)/umoci: $(UMOCI_SRC)
 	cd "$(UMOCI_SRC)" && CC= $(MAKE)
