@@ -194,9 +194,9 @@ else
 endif
 
 # The umoci release page only publishes amd64 binaries. https://github.com/opencontainers/umoci/releases
-echo "debug umoci"
-echo "$(UMOCI_REPO), repo"
-echo "$(UMOCI_SRC), src"
+# echo "debug umoci"
+# echo "$(UMOCI_REPO), repo"
+# echo "$(UMOCI_SRC), src"
 $(UMOCI_SRC):
 	$(call git_clone_repo_ref,$(UMOCI_REPO),$(UMOCI_SRC),"8f807a317985f23f90f0d1dd75f5f6de34e0c263")
 
