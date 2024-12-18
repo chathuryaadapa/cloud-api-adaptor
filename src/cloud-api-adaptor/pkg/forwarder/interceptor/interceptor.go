@@ -218,6 +218,8 @@ func (i *interceptor) CreateSandbox(ctx context.Context, req *pb.CreateSandboxRe
 }
 
 func (i *interceptor) DestroySandbox(ctx context.Context, req *pb.DestroySandboxRequest) (*emptypb.Empty, error) {
+	logger.Printf("waiting for 10 mins before deletion")
+	time.Sleep(10 * time.Minute)
 
 	logger.Printf("DestroySandbox")
 
