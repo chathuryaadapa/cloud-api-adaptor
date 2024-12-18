@@ -10,7 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
+        "time"
 	"github.com/confidential-containers/cloud-api-adaptor/src/cloud-api-adaptor/pkg/util/agentproto"
 	pb "github.com/kata-containers/kata-containers/src/runtime/virtcontainers/pkg/agent/protocols/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -165,8 +165,10 @@ func (s *proxyService) CreateSandbox(ctx context.Context, req *pb.CreateSandboxR
 }
 
 func (s *proxyService) DestroySandbox(ctx context.Context, req *pb.DestroySandboxRequest) (*emptypb.Empty, error) {
-
-	logger.Printf("DestroySandbox")
+	
+        logger.Printf("waiting for 10 mins before deletion")
+	time.Sleep(10 * time.Minute)
+        logger.Printf("DestroySandbox")
 
 	res, err := s.Redirector.DestroySandbox(ctx, req)
 
