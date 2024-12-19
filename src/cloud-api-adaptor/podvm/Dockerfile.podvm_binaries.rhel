@@ -11,7 +11,7 @@ FROM ${BUILDER_IMG} AS podvm_builder
 ARG PODVM_DISTRO=rhel
 # By default AA will be built with the `all-attesters` feature,
 # which doesn't compile ootb on RHEL.
-ARG ATTESTER=none
+ARG ATTESTER="se-attester"
 # If not provided, uses system architecture
 ARG ARCH
 #This is the name of the policy file under
