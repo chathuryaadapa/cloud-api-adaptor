@@ -164,7 +164,7 @@ $(GUEST_COMPONENTS_SRC):
 	$(call git_clone_repo_ref,$(GUEST_COMPONENTS_REPO),$(GUEST_COMPONENTS_SRC),$(GUEST_COMPONENTS_VERSION))
 
 $(ATTESTATION_AGENT): $(FORCE_TARGET) | $(GUEST_COMPONENTS_SRC)
-	cd "$(GUEST_COMPONENTS_SRC)/attestation-agent" && CC= ARCH=$(ARCH) $(MAKE) ATTESTER=$(ATTESTER) ttrpc=true LIBC="$(LIBC)"
+	cd "$(GUEST_COMPONENTS_SRC)/attestation-agent" && CC= ARCH=$(ARCH) $(MAKE) ATTESTER="se-attester" ttrpc=true LIBC="$(LIBC)"
 	mkdir -p "$(@D)"
 	install --compare "$(GUEST_COMPONENTS_SRC)/target/$(RUST_TARGET)/release/attestation-agent" "$@"
 
