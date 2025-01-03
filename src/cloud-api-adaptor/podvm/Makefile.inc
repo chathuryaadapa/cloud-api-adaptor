@@ -132,9 +132,9 @@ endef
 # $(1) - Artifact name
 # $(2) - Tag suffix
 define pull_gc_artifact
-#$(eval $(call generate_tag,tag,$(GUEST_COMPONENTS_REF),$(2)))
-	$(eval OCI_IMAGE := quay.io/repository/cadapa/guest-components/$(1))
-	$(eval OCI_DIGEST := $(shell oras resolve $(OCI_IMAGE):aa-v0.11-se_s390x))
+        $(eval $(call generate_tag,tag,$(GUEST_COMPONENTS_REF),$(2)))
+	$(eval OCI_IMAGE := quay.io/cadapa/guest-components/$(1))
+	$(eval OCI_DIGEST := $(shell oras resolve $(OCI_IMAGE):"aa-v0.11-se_s390x"))
 	$(eval OCI_REF := $(OCI_IMAGE)@$(OCI_DIGEST))
 	$(if $(filter yes,$(VERIFY_PROVENANCE)),$(ROOT_DIR)hack/verify-provenance.sh \
 		-a $(OCI_REF) \
