@@ -132,9 +132,9 @@ endef
 # $(1) - Artifact name
 # $(2) - Tag suffix
 define pull_gc_artifact
-	$(eval $(call generate_tag,tag,$(GUEST_COMPONENTS_REF),$(2)))
-	$(eval OCI_IMAGE := $(GUEST_COMPONENTS_REGISTRY)/$(1))
-	$(eval OCI_DIGEST := $(shell oras resolve $(OCI_IMAGE):${tag}))
+#$(eval $(call generate_tag,tag,$(GUEST_COMPONENTS_REF),$(2)))
+	$(eval OCI_IMAGE := quay.io/repository/cadapa/guest-components/$(1))
+	$(eval OCI_DIGEST := $(shell oras resolve $(OCI_IMAGE):aa-v0.11-se_s390x))
 	$(eval OCI_REF := $(OCI_IMAGE)@$(OCI_DIGEST))
 	$(if $(filter yes,$(VERIFY_PROVENANCE)),$(ROOT_DIR)hack/verify-provenance.sh \
 		-a $(OCI_REF) \
@@ -211,12 +211,12 @@ $(PAUSE): | $(PAUSE_SRC) $(UMOCI_SRC)/umoci
 	$(UMOCI_SRC)/umoci unpack --rootless --image "$(PAUSE_SRC):$(PAUSE_VERSION)" "${FILES_DIR}/$(PAUSE_BUNDLE)"
 
 $(ATTESTATION_AGENT): $(FORCE_TARGET)
-	$(call pull_gc_artifact,attestation-agent,$(TEE_PLATFORM)_$(ARCH))
+	$(call pull_gc_artifact,attestation-agent,se-attester_$(ARCH))
 	tar xvJpf attestation-agent.tar.xz
 	install -D --compare attestation-agent "$@"
 
 $(CONFIDENTIAL_DATA_HUB): $(FORCE_TARGET)
-	$(call pull_gc_artifact,confidential-data-hub,$(ARCH))
+	$(call pull_gc_artifact,cdh,$(ARCH))
 	tar xvJpf confidential-data-hub.tar.xz
 	install -D --compare confidential-data-hub "$@"
 
