@@ -27,6 +27,8 @@ optionals+=""
 # handled directly by Go code via FlagRegistrar in main.go and no longer need
 # env-to-arg conversion here.
 
+# Developer mode is now handled via FlagRegistrar with PEERPODS_DEVELOPER_MODE env var
+
 test_vars() {
     for i in "$@"; do
         [ -z "${!i}" ] && echo "\$$i is NOT set" && EXT=1
@@ -96,6 +98,12 @@ ibmcloud_powervs() {
 libvirt() {
     test_vars LIBVIRT_URI
 
+<<<<<<< HEAD
+=======
+    [[ "${LIBVIRT_CPU}" ]] && optionals+="-cpu ${LIBVIRT_CPU} "
+    [[ "${LIBVIRT_MEMORY}" ]] && optionals+="-memory ${LIBVIRT_MEMORY} "
+
+>>>>>>> 27302445 (caa: Add option to skip Peer pod VM delete)
     set -x
     exec cloud-api-adaptor libvirt -data-dir /opt/data-dir ${optionals}
 
