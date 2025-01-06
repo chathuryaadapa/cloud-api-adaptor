@@ -74,6 +74,7 @@ COMMIT := $(shell	commit=$$(git describe --match '' --dirty --always) && \
 					fi && \
 	                echo "$$commit")
 ifndef COMMIT
+echo $COMMIT
 $(error Failed to derive an image name. Explicitly define IMAGE_NAME)
 endif
 IMAGE_NAME := $(IMAGE_PREFIX)-$(COMMIT)-$(DEB_ARCH)
