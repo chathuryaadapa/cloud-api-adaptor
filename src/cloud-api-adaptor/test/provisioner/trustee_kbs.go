@@ -542,6 +542,7 @@ func (p *KeyBrokerService) Deploy(ctx context.Context, cfg *envconf.Config, prop
 	}
 
 	log.Info("Install Kbs")
+	log.Printf("tmpoverlay %s", tmpoverlay)
 	if err := tmpoverlay.Apply(ctx, cfg); err != nil {
 		return err
 	}
