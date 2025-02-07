@@ -188,7 +188,7 @@ func TestLibvirtKbsKeyRelease(t *testing.T) {
 	}
 	assert := LibvirtAssert{}
 	t.Parallel()
-	DoTestKbsKeyReleaseForFailure(t, testEnv, assert, kbsEndpoint, resourcePath, testSecret)
+	DoTestHTTPSKbsKeyReleaseForFailure(t, testEnv, assert, kbsEndpoint, resourcePath, testSecret)
 	if isTestWithKbsIBMSE() {
 		t.Log("KBS with ibmse cases")
 		// the allow_*_.rego file is created by follow document
@@ -197,19 +197,19 @@ func TestLibvirtKbsKeyRelease(t *testing.T) {
 		if err != nil {
 			t.Fatalf("EnableKbsCustomizedAttestationPolicy failed with: %v", err)
 		}
-		DoTestKbsKeyReleaseForFailure(t, testEnv, assert, kbsEndpoint, resourcePath, testSecret)
+		DoTestHTTPSKbsKeyReleaseForFailure(t, testEnv, assert, kbsEndpoint, resourcePath, testSecret)
 		err = keyBrokerService.EnableKbsCustomizedAttestationPolicy("allow_with_correct_claims.rego")
 		if err != nil {
 			t.Fatalf("EnableKbsCustomizedAttestationPolicy failed with: %v", err)
 		}
-		DoTestKbsKeyRelease(t, testEnv, assert, kbsEndpoint, resourcePath, testSecret)
+		DoTestHTTPSKbsKeyRelease(t, testEnv, assert, kbsEndpoint, resourcePath, testSecret)
 	} else {
 		t.Log("KBS normal cases")
 		err = keyBrokerService.EnableKbsCustomizedResourcePolicy("allow_all.rego")
 		if err != nil {
 			t.Fatalf("EnableKbsCustomizedResourcePolicy failed with: %v", err)
 		}
-		DoTestKbsKeyRelease(t, testEnv, assert, kbsEndpoint, resourcePath, testSecret)
+		DoTestHTTPSKbsKeyRelease(t, testEnv, assert, kbsEndpoint, resourcePath, testSecret)
 	}
 }
 
