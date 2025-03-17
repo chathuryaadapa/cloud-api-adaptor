@@ -27,7 +27,8 @@ optionals+=""
 # handled directly by Go code via FlagRegistrar in main.go and no longer need
 # env-to-arg conversion here.
 
-# Developer mode is now handled via FlagRegistrar with PEERPODS_DEVELOPER_MODE env var
+# Developer mode and peerpods-limit-per-node are now handled via FlagRegistrar
+# with PEERPODS_DEVELOPER_MODE and PEERPODS_LIMIT_PER_NODE env vars
 
 test_vars() {
     for i in "$@"; do
