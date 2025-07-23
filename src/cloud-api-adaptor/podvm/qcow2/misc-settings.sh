@@ -13,7 +13,7 @@
 # dhcp IP is assigned to the VM
 echo -n | sudo tee /etc/machine-id
 #Lock password for the ssh user (peerpod) to disallow logins
-sudo passwd -l peerpod
+# sudo passwd -l peerpod
 
 # Subscribe RHEL incase of ACTIVATION_KEY & ORG_ID provided.
 if [[ -n "${ACTIVATION_KEY}" && -n "${ORG_ID}" ]]; then \
