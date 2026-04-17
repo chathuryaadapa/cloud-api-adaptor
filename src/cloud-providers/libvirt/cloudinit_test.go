@@ -87,3 +87,100 @@ func TestInMemoryCopier(t *testing.T) {
 
 	assert.Equal(t, buf, otherBuf)
 }
+
+func TestCreateCloudInitWithEmptyData(t *testing.T) {
+	userDataContent := []byte("")
+	metaDataContent := []byte("")
+
+	isoData, err := createCloudInit(userDataContent, metaDataContent)
+	require.NoError(t, err)
+	assert.NotNil(t, isoData)
+	assert.Greater(t, len(isoData), 0)
+}
+
+func TestCreateCloudInitWithLargeData(t *testing.T) {
+	// Create large user data
+	largeData := make([]byte, 10000)
+	for i := range largeData {
+		largeData[i] = byte('A' + (i % 26))
+	}
+
+	userDataContent := largeData
+	metaDataContent := []byte("instance-id: test-instance\nlocal-hostname: test-host")
+
+	isoData, err := createCloudInit(userDataContent, metaDataContent)
+	require.NoError(t, err)
+	assert.NotNil(t, isoData)
+	assert.Greater(t, len(isoData), len(largeData))
+}
+
+func TestCreateCloudInitWithSpecialCharacters(t *testing.T) {
+	userDataContent := []byte("#cloud-config\nusers:\n  - name: test\n    ssh-authorized-keys:\n      - ssh-rsa AAAAB3...")
+	metaDataContent := []byte("instance-id: test-123\nlocal-hostname: test-host-456")
+
+	isoData, err := createCloudInit(userDataContent, metaDataContent)
+	require.NoError(t, err)
+	assert.NotNil(t, isoData)
+
+	// Verify ISO can be read
+	file, err := os.CreateTemp("", "CloudInitSpecial-*.iso")
+	require.NoError(t, err)
+	defer os.Remove(file.Name())
+
+	err = os.WriteFile(file.Name(), isoData, os.ModePerm)
+	require.NoError(t, err)
+
+	isoFile, err := os.Open(file.Name())
+	require.NoError(t, err)
+	defer isoFile.Close()
+
+	isoImg, err := iso9660.OpenImage(isoFile)
+	require.NoError(t, err)
+
+	rootFile, err := isoImg.RootDir()
+	require.NoError(t, err)
+
+	children, err := rootFile.GetChildren()
+	require.NoError(t, err)
+	assert.Equal(t, 3, len(children)) // user-data, meta-data, vendor-data
+}
+
+func TestCreateCloudInitVerifyVendorData(t *testing.T) {
+	userDataContent := []byte("userdata")
+	metaDataContent := []byte("metadata")
+
+	isoData, err := createCloudInit(userDataContent, metaDataContent)
+	require.NoError(t, err)
+
+	file, err := os.CreateTemp("", "CloudInitVendor-*.iso")
+	require.NoError(t, err)
+	defer os.Remove(file.Name())
+
+	err = os.WriteFile(file.Name(), isoData, os.ModePerm)
+	require.NoError(t, err)
+
+	isoFile, err := os.Open(file.Name())
+	require.NoError(t, err)
+	defer isoFile.Close()
+
+	isoImg, err := iso9660.OpenImage(isoFile)
+	require.NoError(t, err)
+
+	rootFile, err := isoImg.RootDir()
+	require.NoError(t, err)
+
+	children, err := rootFile.GetChildren()
+	require.NoError(t, err)
+
+	files := make(map[string][]byte)
+	for _, child := range children {
+		key := child.Name()
+		data, err := io.ReadAll(child.Reader())
+		require.NoError(t, err)
+		files[key] = data
+	}
+
+	// Verify vendor-data exists and is empty
+	assert.Contains(t, files, vendorDataFilename)
+	assert.Equal(t, []byte{}, files[vendorDataFilename])
+}
