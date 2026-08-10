@@ -6,6 +6,7 @@
 package libvirt
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strconv"
@@ -216,7 +217,7 @@ func TestWaitForSuccess(t *testing.T) {
 			setWaitTimers(t, tt.timeout, tt.interval)
 
 			callCount := 0
-			err := waitForSuccess(testOperation, func() error {
+			err := waitForSuccess(context.Background(), testOperation, func() error {
 				callCount++
 				if tt.failCount == alwaysFails {
 					return errors.New(errPersistent)

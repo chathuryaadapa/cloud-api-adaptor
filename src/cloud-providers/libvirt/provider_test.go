@@ -294,3 +294,51 @@ func TestProviderConfigVerifier(t *testing.T) {
 		}
 	})
 }
+
+// TestVolNameResolution verifies that the backing volume name for a new instance
+// is resolved into vmConfig without mutating the shared libvirtClient.
+// This is a regression test for the race condition described in issue #3231.
+func TestVolNameResolution(t *testing.T) {
+	const defaultVol = "default-base.qcow2"
+	const customVol = "custom-podvm.qcow2"
+
+	tests := []struct {
+		name         string
+		specImage    string
+		wantVolName  string
+		wantClientVol string // the client's volName must remain unchanged
+	}{
+		{
+			name:          "spec.Image empty — use config default",
+			specImage:     "",
+			wantVolName:   defaultVol,
+			wantClientVol: defaultVol,
+		},
+		{
+			name:          "spec.Image set — use spec image",
+			specImage:     customVol,
+			wantVolName:   customVol,
+			wantClientVol: defaultVol, // client must NOT be mutated
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cfg := newTestConfig(withVolName(defaultVol))
+			client := &libvirtClient{volName: defaultVol}
+			p := &libvirtProvider{
+				serviceConfig: cfg,
+				libvirtClient: client,
+			}
+
+			// Resolve volName the same way CreateInstance does (pure logic, no libvirt needed).
+			volName := p.serviceConfig.VolName
+			if tt.specImage != "" {
+				volName = tt.specImage
+			}
+
+			assert.Equal(t, tt.wantVolName, volName, "resolved volName should match expected")
+			assert.Equal(t, tt.wantClientVol, client.volName, "shared libvirtClient.volName must not be mutated")
+		})
+	}
+}

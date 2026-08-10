@@ -8,6 +8,7 @@ package libvirt
 // Code copied from https://github.com/openshift/cluster-api-provider-libvirt
 
 import (
+	"context"
 	"encoding/xml"
 	"errors"
 	"fmt"
@@ -28,7 +29,7 @@ var waitSleepInterval = 1 * time.Second
 var waitTimeout = 5 * time.Minute
 
 // waitForSuccess wait for success and timeout after 5 minutes.
-func waitForSuccess(errorMessage string, f func() error) error {
+func waitForSuccess(ctx context.Context, errorMessage string, f func() error) error {
 	start := time.Now()
 	for {
 		err := f()
@@ -37,7 +38,12 @@ func waitForSuccess(errorMessage string, f func() error) error {
 		}
 		logger.Printf("%s. Re-trying.\n", err)
 
-		time.Sleep(waitSleepInterval)
+		select {
+		case <-ctx.Done():
+			return fmt.Errorf("%s: %w", errorMessage, ctx.Err())
+		case <-time.After(waitSleepInterval):
+		}
+
 		if time.Since(start) > waitTimeout {
 			return fmt.Errorf("%s: %s", errorMessage, err)
 		}
@@ -106,11 +112,11 @@ func newDefVolumeFromXML(s string) (libvirtxml.StorageVolume, error) {
 	return volumeDef, nil
 }
 
-func uploadVolume(libvirtClient *libvirtClient, volumeDef libvirtxml.StorageVolume, img image) (volumeKey string, err error) {
+func uploadVolume(ctx context.Context, libvirtClient *libvirtClient, volumeDef libvirtxml.StorageVolume, img image) (volumeKey string, err error) {
 
 	// Refresh the pool of the volume so that libvirt knows it is
 	// not longer in use.
-	err = waitForSuccess("Error refreshing pool for volume", func() error {
+	err = waitForSuccess(ctx, "Error refreshing pool for volume", func() error {
 		return libvirtClient.pool.Refresh(0)
 	})
 	if err != nil {
@@ -210,7 +216,7 @@ func volumeCapacityBytes(volSizeGiB, backingCapacityBytes uint64) (uint64, error
 // createVolume creates a qcow2 volume backed by baseVolName.
 // volSizeGiB is the requested size in GiB; libvirt uses the larger of this
 // value and the backing image's actual capacity.
-func createVolume(volName string, volSizeGiB uint64, baseVolName string, libvirtClient *libvirtClient) (err error) {
+func createVolume(ctx context.Context, volName string, volSizeGiB uint64, baseVolName string, libvirtClient *libvirtClient) (err error) {
 	volumeDef := newDefVolume(volName)
 	volumeDef.Target.Format.Type = "qcow2"
 
@@ -247,7 +253,7 @@ func createVolume(volName string, volSizeGiB uint64, baseVolName string, libvirt
 	// create the volume
 	// Refresh the pool of the volume so that libvirt knows it is
 	// not longer in use.
-	err = waitForSuccess("error refreshing pool for volume", func() error {
+	err = waitForSuccess(ctx, "error refreshing pool for volume", func() error {
 		return libvirtClient.pool.Refresh(0)
 	})
 	if err != nil {
@@ -298,7 +304,7 @@ func volumeExists(libvirtClient *libvirtClient, volumeName string) (exist bool, 
 	return true, nil
 }
 
-func deleteVolumeByPath(libvirtClient *libvirtClient, path string) (err error) {
+func deleteVolumeByPath(ctx context.Context, libvirtClient *libvirtClient, path string) (err error) {
 
 	// Get volume name from path
 
@@ -317,11 +323,11 @@ func deleteVolumeByPath(libvirtClient *libvirtClient, path string) (err error) {
 		return err
 	}
 
-	return deleteVolume(libvirtClient, name)
+	return deleteVolume(ctx, libvirtClient, name)
 
 }
 
-func deleteVolume(libvirtClient *libvirtClient, name string) (err error) {
+func deleteVolume(ctx context.Context, libvirtClient *libvirtClient, name string) (err error) {
 	exists, err := volumeExists(libvirtClient, name)
 	if err != nil {
 		logger.Printf("Unable to check if volume (%s) exists", name)
@@ -352,7 +358,7 @@ func deleteVolume(libvirtClient *libvirtClient, name string) (err error) {
 		}
 	}()
 
-	err = waitForSuccess("Error refreshing pool for volume", func() error {
+	err = waitForSuccess(ctx, "Error refreshing pool for volume", func() error {
 		return volPool.Refresh(0)
 	})
 	if err != nil {
